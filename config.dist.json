@@ -1,0 +1,11 @@
+{
+    "db":{
+        "mysql":{
+            "host":"localhost",
+            "user":"",
+            "password":"",
+            "dbName":"fonder_v2",
+            "port": null
+        }
+    }
+}
