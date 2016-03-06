@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model;
+namespace KlangTiny\App\Model;
 
-use App\Model;
+use KlangTiny\App\Model;
 
 class User extends Model{
 

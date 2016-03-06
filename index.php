@@ -1,8 +1,8 @@
 <?php
 require_once "vendor/autoload.php";
 
-use App\Controller;
-use App\Controller\NoRoute;
+use Klang\Tiny\App\Controller;
+use Klang\Tiny\App\Controller\NoRoute;
 
 $app = new App();
 

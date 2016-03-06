@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace KlangTiny\App\Controller;
 
-use App\Controller;
-use App\Model\User as UserModel;
+use KlangTiny\App\Controller;
+use KlangTiny\App\Model\User as UserModel;
 
 class User extends Controller {
 

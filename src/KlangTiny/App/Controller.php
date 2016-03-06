@@ -1,7 +1,7 @@
 <?php
 
-namespace App;
-use App;
+namespace KlangTiny\App;
+use KlangTiny\App;
 
 class Controller {
 

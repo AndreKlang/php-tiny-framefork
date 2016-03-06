@@ -1,5 +1,8 @@
 <?php
 
+namespace KlangTiny;
+
+use MeekroDB;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\PHPConsoleHandler;
@@ -17,10 +20,10 @@ class App {
     /** @var Logger */
     private static $_log = null;
 
-    /** @var \App\Controller[]  */
+    /** @var \KlangTiny\App\Controller[]  */
     private static $_controllerRegistry = array();
 
-    /** @var \App\Core\Request */
+    /** @var \KlangTiny\App\Core\Request */
     private static $_request;
 
     function __construct() {
@@ -30,11 +33,11 @@ class App {
         self::$_log->pushHandler(new StreamHandler('./Parse.log'));
         self::$_log->pushHandler(new PHPConsoleHandler());
 
-        self::$_request = new \App\Core\Request();
+        self::$_request = new \KlangTiny\App\Core\Request();
     }
 
     /**
-     * @return \App\Core\Request
+     * @return \KlangTiny\App\Core\Request
      */
     public static function getRequest() {
         return self::$_request;
@@ -80,23 +83,23 @@ class App {
     /**
      * Register a controller to an URI
      * @param string $uri
-     * @param \App\Controller $controller
+     * @param \KlangTiny\App\Controller $controller
      */
-    public static function registerController($uri, \App\Controller $controller){
+    public static function registerController($uri, \KlangTiny\App\Controller $controller){
         self::$_controllerRegistry[$uri] = $controller;
     }
 
     /**
      * Register the fallback (404) controller
-     * @param \App\Controller $controller
+     * @param \KlangTiny\App\Controller $controller
      */
-    public static function registerNoRouteController(\App\Controller $controller){
+    public static function registerNoRouteController(\KlangTiny\App\Controller $controller){
         self::registerController(self::NO_ROUTE_NAME,$controller);
     }
 
     /**
      * Get all controllers
-     * @return \App\Controller[]
+     * @return \KlangTiny\App\Controller[]
      */
     public static function getRegisteredControllers(){
         return self::$_controllerRegistry;

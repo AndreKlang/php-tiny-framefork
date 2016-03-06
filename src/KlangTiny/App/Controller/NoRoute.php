@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace KlangTiny\App\Controller;
 
-use App\Controller;
+use KlangTiny\App\Controller;
 
 class NoRoute extends Controller {
 

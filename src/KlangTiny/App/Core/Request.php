@@ -1,8 +1,8 @@
 <?php
-namespace App\Core;
+namespace KlangTiny\App\Core;
 
-use App\Core\Request\Exception\ControllerNotFound;
-use App\Core\Request\StatusCode;
+use KlangTiny\App\Core\Request\Exception\ControllerNotFound;
+use KlangTiny\App\Core\Request\StatusCode;
 
 class Request {
 
