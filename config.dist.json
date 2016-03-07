@@ -4,7 +4,8 @@
             "host":"localhost",
             "user":"",
             "password":"",
-            "dbName":"fonder_v2",
+            "dbName":"",
+            "encoding":"utf8_general_ci",
             "port": null
         }
     }

@@ -66,7 +66,7 @@ class App {
     }
 
     /**
-     * Get a connection the MySql DB
+     * Get a connection to the MySql DB
      * @return MeekroDB
      */
     public static function getMysql(){
@@ -75,9 +75,14 @@ class App {
 
         $mysqlConfig = self::getConfig("db")->mysql;
 
-        $encoding = 'utf8_swedish_ci';
-
-        return self::$_mysql = new MeekroDB($mysqlConfig->host, $mysqlConfig->user, $mysqlConfig->password, $mysqlConfig->dbName, $mysqlConfig->port, $encoding);
+        return self::$_mysql = new MeekroDB(
+            $mysqlConfig->host,
+            $mysqlConfig->user,
+            $mysqlConfig->password,
+            $mysqlConfig->dbName,
+            $mysqlConfig->port,
+            $mysqlConfig->encoding
+        );
     }
 
     /**
