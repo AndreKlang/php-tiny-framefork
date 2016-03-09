@@ -26,6 +26,8 @@ class App {
     /** @var \KlangTiny\App\Core\Request */
     private static $_request;
 
+    private static $_configFilePath = "./config.json";
+
     function __construct() {
 
         // set up monolog
@@ -55,7 +57,10 @@ class App {
      * @return object|string|null
      */
     public static function getConfig($key = null){
-        if(self::$_config === null) self::$_config = json_decode(file_get_contents("config.json"));
+
+        $filename = realpath(self::$_configFilePath);
+
+        if(self::$_config === null) self::$_config = json_decode(file_get_contents($filename));
 
         if($key === null) return self::$_config;
 
@@ -74,6 +79,13 @@ class App {
         if(self::$_mysql != null) return self::$_mysql;
 
         $mysqlConfig = self::getConfig("db")->mysql;
+
+        // support for docker
+        if(isset($_ENV["MYSQL_HOST"])) $mysqlConfig->host = $_ENV["MYSQL_HOST"];
+        if(isset($_ENV["MYSQL_USER"])) $mysqlConfig->user = $_ENV["MYSQL_USER"];
+        if(isset($_ENV["MYSQL_PASSWORD"])) $mysqlConfig->password = $_ENV["MYSQL_PASSWORD"];
+        if(isset($_ENV["MYSQL_DATABASE"])) $mysqlConfig->dbName = $_ENV["MYSQL_DATABASE"];
+        if(isset($_ENV["MYSQL_PORT"])) $mysqlConfig->port = $_ENV["MYSQL_PORT"];
 
         return self::$_mysql = new MeekroDB(
             $mysqlConfig->host,
@@ -108,6 +120,13 @@ class App {
      */
     public static function getRegisteredControllers(){
         return self::$_controllerRegistry;
+    }
+
+    /**
+     * @param string $configFilePath
+     */
+    public static function setConfigFilePath($configFilePath) {
+        self::$_configFilePath = $configFilePath;
     }
 
     /**
