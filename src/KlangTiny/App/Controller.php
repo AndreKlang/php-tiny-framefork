@@ -1,9 +1,11 @@
 <?php
 
 namespace KlangTiny\App;
-use KlangTiny\App;
 
-class Controller {
+use KlangTiny\App;
+use KlangTiny\App\Core\Request;
+
+abstract class Controller {
 
     /**
      * Do not put anything in __construct / __destruct
@@ -21,6 +23,16 @@ class Controller {
      */
     final function __destruct(){
 
+    }
+
+    /**
+     * This function will decide if the $request matches the current controller
+     * Return true if this request matches, false otherwise.
+     * @param Request $request
+     * @return bool
+     */
+    public function match(Request $request){
+        return false;
     }
 
     /**

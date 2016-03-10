@@ -1,27 +1,73 @@
 <?php
 namespace KlangTiny\App\Core;
 
+use KlangTiny\App;
+use KlangTiny\App\Controller;
 use KlangTiny\App\Core\Request\Exception\ControllerNotFound;
 use KlangTiny\App\Core\Request\StatusCode;
 
 class Request {
+
+    const METHOD_POST = "POST";
+    const METHOD_GET = "GET";
+    const METHOD_HEAD = "HEAD";
+    const METHOD_PUT = "PUT";
 
     private $_responseCode = 200;
     private $_contentType = 'text/html';
     private $_charSet = 'utf-8';
     private $_extraHeaders = array();
 
-    private $_params = array(
-        "get" => array(),
-        "post" => array()
-    );
+    function getUri(){
+        return substr($_SERVER['REQUEST_URI'],1);
+    }
 
-    function __construct() {
-        $this->_params["get"] = $_GET;
-        $this->_params["post"] = $_POST;
+    function getMethod(){
+        return $_SERVER['REQUEST_METHOD'];
     }
 
     /**
+     * Get a value from $context if it exists, $default otherwise
+     * @param array $context
+     * @param null|string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    private function _getParam(array $context ,$key = null, $default = null){
+
+        if($key === null) return $context;
+
+        if(!isset($context[$key])) return $default;
+
+        return $context[$key];
+    }
+
+    /**
+     * Get a value from post, if it exists, $default otherwise
+     * @param null|string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    function getParamPost($key = null, $default = null){
+        return $this->_getParam($_POST,$key,$default);
+    }
+
+    /**
+     * Get a value from get, if it exists, $default otherwise
+     * @param null|string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    function getParamGet($key = null, $default = null){
+        return $this->_getParam($_GET,$key,$default);
+    }
+
+    // TODO: deal with "put"
+    function getParamPut(){
+    }
+
+    /**
+     * Set the charset of the response
      * @param string $charSet
      * @return $this
      */
@@ -32,6 +78,7 @@ class Request {
     }
 
     /**
+     * Set the content type of the response
      * @param string $contentType
      * @return $this
      */
@@ -42,6 +89,7 @@ class Request {
     }
 
     /**
+     * Add extra headers to the response
      * @param $key string
      * @param $value string
      * @return $this
@@ -53,6 +101,7 @@ class Request {
     }
 
     /**
+     * Set http response code
      * @param int $responseCode
      * @return $this
      */
@@ -101,33 +150,29 @@ class Request {
     }
 
     /**
-     * Get a controller based on $uri (if set), based on request otherwise
-     * @param null $uri
-     * @return \App\Controller
+     * Get a controller that matches the response
+     * @return Controller
      * @throws ControllerNotFound
      */
-    function getController($uri = null){
-
-        if($uri === null) $targetUri = $_SERVER["REQUEST_URI"];
-        else $targetUri = $uri;
-
-        // just for my dev env
-        // TODO:remove
-        $targetUri = str_replace("/fonder",'',$targetUri);
+    function getController(){
 
         /**
          * @var string $uri
-         * @var \App\Controller $registeredController
+         * @var Controller $registeredController
          */
-        foreach (\App::getRegisteredControllers() as $uri => $registeredController) {
-            if($uri == $targetUri) return $registeredController;
+        foreach (\App::getRegisteredControllers() as $registeredController) {
+            if($registeredController->match($this)){
+                return $registeredController;
+            }
         }
 
-        throw new ControllerNotFound("Controller not found for uri: ". $targetUri);
+        if(App::$controllerNoRoute !== null) return App::$controllerNoRoute;
+
+        throw new ControllerNotFound("Controller not found for uri");
     }
 
     /**
-     * Render the controller
+     * Render matching controller
      * @throws ControllerNotFound
      */
     function render(){
@@ -141,10 +186,10 @@ class Request {
 
         } catch (ControllerNotFound $e) {
 
-            $controller = $this->getController(\App::NO_ROUTE_NAME);
-            $controller->preDispatch();
-            $controller->render();
-            $controller->postDispatch();
+            \App::logger()->addError("No controller matching the request: ".$e->getMessage(),array(
+                "exception" => $e,
+                "request" => $this
+            ));
 
         } catch (\Exception $e){
             \App::logger()->addError("Uncaught exception: ".$e->getMessage(),array(

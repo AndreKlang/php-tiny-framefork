@@ -9,8 +9,6 @@ use Monolog\Handler\PHPConsoleHandler;
 
 class App {
 
-    const NO_ROUTE_NAME = 'noRoute';
-
     /** @var object */
     private static $_config = null;
 
@@ -22,6 +20,9 @@ class App {
 
     /** @var \KlangTiny\App\Controller[]  */
     private static $_controllerRegistry = array();
+
+    /** @var \KlangTiny\App\Controller|null  */
+    public static $controllerNoRoute = null;
 
     /** @var \KlangTiny\App\Core\Request */
     private static $_request;
@@ -102,8 +103,8 @@ class App {
      * @param string $uri
      * @param \KlangTiny\App\Controller $controller
      */
-    public static function registerController($uri, \KlangTiny\App\Controller $controller){
-        self::$_controllerRegistry[$uri] = $controller;
+    public static function registerController(\KlangTiny\App\Controller $controller){
+        self::$_controllerRegistry[] = $controller;
     }
 
     /**
@@ -111,7 +112,7 @@ class App {
      * @param \KlangTiny\App\Controller $controller
      */
     public static function registerNoRouteController(\KlangTiny\App\Controller $controller){
-        self::registerController(self::NO_ROUTE_NAME,$controller);
+        self::$controllerNoRoute = $controller;
     }
 
     /**
