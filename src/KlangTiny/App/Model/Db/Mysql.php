@@ -31,8 +31,9 @@ abstract class Mysql extends Model {
     public function load($id){
 
         // get data from DB
-        $data = (array) App::getMysql()
+        $data = App::getMysql()
             ->table($this->getTableName())
+            ->setFetchMode(\PDO::FETCH_ASSOC)
             ->find($id,$this->getIdCol());
 
         // make sure that we know this is loaded
@@ -53,7 +54,7 @@ abstract class Mysql extends Model {
             $this->_data[$key] = $this->_cast($key,$value);
         }
 
-        if($isRecordNew) $this->_isRecordNew = true;
+        $this->_isRecordNew = ($isRecordNew);
 
         return $this;
     }
@@ -85,6 +86,11 @@ abstract class Mysql extends Model {
         return $this;
     }
 
+    /**
+     * Delete row from db
+     * @return $this
+     * @throws \Exception
+     */
     public function delete(){
         if($this->_isRecordNew) throw new \Exception("Can't delete unsaved record");
 
@@ -97,10 +103,11 @@ abstract class Mysql extends Model {
     }
 
     /**
+     * @var callable|null $filter
      * @return Mysql\Collection
      */
-    public function getCollection(){
-        return new Model\Db\Mysql\Collection($this);
+    public function getCollection($filter = null){
+        return new Model\Db\Mysql\Collection($this, $filter);
     }
 
     /**
@@ -114,6 +121,12 @@ abstract class Mysql extends Model {
             return $default;
     }
 
+    /**
+     * Set data for key
+     * @param $key
+     * @param $value
+     * @throws \Exception
+     */
     protected function _setData($key,$value){
         if(!$this->_isKeyAllowedInSchema($key)) throw new \Exception("Key not allowed in schema");
 

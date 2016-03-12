@@ -2,7 +2,6 @@
 
 namespace KlangTiny;
 
-use MeekroDB;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\PHPConsoleHandler;
