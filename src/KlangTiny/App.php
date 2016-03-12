@@ -6,13 +6,14 @@ use MeekroDB;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\PHPConsoleHandler;
+use Pixie\QueryBuilder\QueryBuilderHandler;
 
 class App {
 
     /** @var object */
     private static $_config = null;
 
-    /** @var MeekroDB */
+    /** @var QueryBuilderHandler */
     private static $_mysql = null;
 
     /** @var Logger */
@@ -95,7 +96,7 @@ class App {
 
     /**
      * Get a connection to the MySql DB
-     * @return MeekroDB
+     * @return QueryBuilderHandler
      */
     public static function getMysql(){
 
@@ -110,17 +111,18 @@ class App {
         if(isset($_ENV["MYSQL_DATABASE"])) $mysqlConfig->dbName = $_ENV["MYSQL_DATABASE"];
         if(isset($_ENV["MYSQL_PORT"])) $mysqlConfig->port = $_ENV["MYSQL_PORT"];
 
-        self::$_mysql = new MeekroDB(
-            $mysqlConfig->host,
-            $mysqlConfig->user,
-            $mysqlConfig->password,
-            $mysqlConfig->dbName,
-            $mysqlConfig->port,
-            $mysqlConfig->encoding
+        $config = array(
+            'driver'    => 'mysql',
+            'host'      => $mysqlConfig->host,
+            'port'      => $mysqlConfig->port,
+            'database'  => $mysqlConfig->dbName,
+            'username'  => $mysqlConfig->user,
+            'password'  => $mysqlConfig->password,
+            'collation' => $mysqlConfig->encoding
         );
 
-        self::$_mysql->error_handler = false;
-        self::$_mysql->throw_exception_on_error = true;
+        $connection = new \Pixie\Connection('mysql', $config);
+        self::$_mysql = new \Pixie\QueryBuilder\QueryBuilderHandler($connection);
 
         return self::$_mysql;
     }

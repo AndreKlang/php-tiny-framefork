@@ -31,7 +31,9 @@ abstract class Mysql extends Model {
     public function load($id){
 
         // get data from DB
-        $data = App::getMysql()->queryFirstRow("SELECT * FROM %b WHERE %b = %i",$this->_table_name,$this->_id_col,$id);
+        $data = (array) App::getMysql()
+            ->table($this->getTableName())
+            ->find($id,$this->getIdCol());
 
         // make sure that we know this is loaded
         if(!empty($data)) $this->_isRecordNew = false;
@@ -64,21 +66,32 @@ abstract class Mysql extends Model {
         if($this->_isRecordNew){
 
             // save the data
-            App::getMysql()->insert($this->_table_name,$this->_data);
+            $id = App::getMysql()
+                ->table($this->getTableName())
+                ->insert($this->_data);
 
             // set the id it got in this instance
-            $this->_data[$this->_id_col] = App::getMysql()->insertId();
+            $this->_data[$this->getIdCol()] = $id;
 
             // store that it is not new anymore
             $this->_isRecordNew = false;
         } else {
-            App::getMysql()->update(
-                $this->_table_name,
-                $this->_data,
-                $this->_id_col."=%s",
-                (string) $this->getId()
-            );
+            App::getMysql()
+                ->table($this->getTableName())
+                ->where($this->getIdCol(),"=",$this->getId())
+                ->update($this->_data);
         }
+
+        return $this;
+    }
+
+    public function delete(){
+        if($this->_isRecordNew) throw new \Exception("Can't delete unsaved record");
+
+        App::getMysql()
+            ->table($this->getTableName())
+            ->where($this->getIdCol(),"=",$this->getId())
+            ->delete();
 
         return $this;
     }
@@ -159,7 +172,7 @@ abstract class Mysql extends Model {
      * @return null|string
      */
     public function getId(){
-        return $this->_getData($this->_id_col);
+        return $this->_getData($this->getIdCol());
     }
 
     /**
