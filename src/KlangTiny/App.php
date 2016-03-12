@@ -29,7 +29,7 @@ class App {
 
     private static $_configFilePath = "./config.json";
 
-    private static $_logFolder = '';
+    private static $_logFolder = '/var/log';
 
     private static $_isDeveloperMode = false;
 
@@ -49,15 +49,17 @@ class App {
 
     function __construct() {
 
-        self::$_logFolder = $_SERVER['DOCUMENT_ROOT']."/var/log";
+        // add document root to path
+        self::$_logFolder = $_SERVER['DOCUMENT_ROOT'].self::$_logFolder;
 
         if(!file_exists(self::$_logFolder)) mkdir(self::$_logFolder, 0755, true);
 
         // set up monolog
-        self::$_log = new Logger(__CLASS__);
+        self::$_log = new Logger("System");
         self::$_log->pushHandler(new StreamHandler(self::$_logFolder.'/system.log'));
         self::$_log->pushHandler(new PHPConsoleHandler());
 
+        // initiate the request
         self::$_request = new \KlangTiny\App\Core\Request();
     }
 
@@ -77,18 +79,22 @@ class App {
 
     /**
      * @param null|string $key
-     * @return object|string|null
+     * @return mixed
      */
-    public static function getConfig($key = null){
+    public static function getConfig($key = null, $default = null){
 
         $filename = realpath(self::$_configFilePath);
 
+        // load config once
         if(self::$_config === null) self::$_config = json_decode(file_get_contents($filename));
 
+        // return all if no key
         if($key === null) return self::$_config;
 
-        if(!isset(self::$_config->$key)) return null;
+        // if specified does not exist key exists, return $default
+        if(!isset(self::$_config->$key)) return $default;
 
+        // if, after all, a key was found, return it
         return self::$_config->$key;
 
     }
@@ -103,7 +109,7 @@ class App {
 
         $mysqlConfig = self::getConfig("db")->mysql;
 
-        // support for docker
+        // support for docker or runtime configuration
         if(isset($_ENV["MYSQL_HOST"])) $mysqlConfig->host = $_ENV["MYSQL_HOST"];
         if(isset($_ENV["MYSQL_USER"])) $mysqlConfig->user = $_ENV["MYSQL_USER"];
         if(isset($_ENV["MYSQL_PASSWORD"])) $mysqlConfig->password = $_ENV["MYSQL_PASSWORD"];
@@ -127,7 +133,7 @@ class App {
     }
 
     /**
-     * Register a controller to an URI
+     * Register a controller
      * @param string $uri
      * @param \KlangTiny\App\Controller $controller
      */
@@ -152,6 +158,7 @@ class App {
     }
 
     /**
+     * Set custom path to config-file
      * @param string $configFilePath
      */
     public static function setConfigFilePath($configFilePath) {
