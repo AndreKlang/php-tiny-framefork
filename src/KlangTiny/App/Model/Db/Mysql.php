@@ -52,6 +52,8 @@ abstract class Mysql extends Model {
         }
 
         if($isRecordNew) $this->_isRecordNew = true;
+
+        return $this;
     }
 
     /**
@@ -79,6 +81,13 @@ abstract class Mysql extends Model {
         }
 
         return $this;
+    }
+
+    /**
+     * @return Mysql\Collection
+     */
+    public function getCollection(){
+        return new Model\Db\Mysql\Collection($this);
     }
 
     /**
@@ -151,6 +160,27 @@ abstract class Mysql extends Model {
      */
     public function getId(){
         return $this->_getData($this->_id_col);
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdCol() {
+        return $this->_id_col;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSchema() {
+        return $this->_schema;
+    }
+
+    /**
+     * @return null
+     */
+    public function getTableName() {
+        return $this->_table_name;
     }
 
 }
