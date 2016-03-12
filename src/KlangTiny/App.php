@@ -29,11 +29,33 @@ class App {
 
     private static $_configFilePath = "./config.json";
 
+    private static $_logFolder = '';
+
+    private static $_isDeveloperMode = false;
+
+    /**
+     * @return boolean
+     */
+    public static function isIsDeveloperMode() {
+        return self::$_isDeveloperMode;
+    }
+
+    /**
+     * @param boolean $isDeveloperMode
+     */
+    public static function setIsDeveloperMode($isDeveloperMode) {
+        self::$_isDeveloperMode = $isDeveloperMode;
+    }
+
     function __construct() {
+
+        self::$_logFolder = $_SERVER['DOCUMENT_ROOT']."/var/log";
+
+        if(!file_exists(self::$_logFolder)) mkdir(self::$_logFolder, 0755, true);
 
         // set up monolog
         self::$_log = new Logger(__CLASS__);
-        self::$_log->pushHandler(new StreamHandler('./Parse.log'));
+        self::$_log->pushHandler(new StreamHandler(self::$_logFolder.'/system.log'));
         self::$_log->pushHandler(new PHPConsoleHandler());
 
         self::$_request = new \KlangTiny\App\Core\Request();
@@ -88,7 +110,7 @@ class App {
         if(isset($_ENV["MYSQL_DATABASE"])) $mysqlConfig->dbName = $_ENV["MYSQL_DATABASE"];
         if(isset($_ENV["MYSQL_PORT"])) $mysqlConfig->port = $_ENV["MYSQL_PORT"];
 
-        return self::$_mysql = new MeekroDB(
+        self::$_mysql = new MeekroDB(
             $mysqlConfig->host,
             $mysqlConfig->user,
             $mysqlConfig->password,
@@ -96,6 +118,11 @@ class App {
             $mysqlConfig->port,
             $mysqlConfig->encoding
         );
+
+        self::$_mysql->error_handler = false;
+        self::$_mysql->throw_exception_on_error = true;
+
+        return self::$_mysql;
     }
 
     /**

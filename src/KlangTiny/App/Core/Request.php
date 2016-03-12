@@ -191,13 +191,36 @@ class Request {
                 "request" => $this
             ));
 
+            $this->printException($e);
+
+        } catch (\MeekroDBException $e){
+
+            \App::logger()->addError("DB-Exception: ".$e->getMessage(),array(
+                "exception" => $e,
+                "query" => $e->getQuery(),
+                "trace" => $e->getTraceAsString(),
+                "request" => $this
+            ));
+
+            $this->printException($e);
+
         } catch (\Exception $e){
             \App::logger()->addError("Uncaught exception: ".$e->getMessage(),array(
                 "exception" => $e,
                 "trace" => $e->getTraceAsString(),
                 "request" => $this
             ));
+
+            $this->printException($e);
         }
 
+    }
+
+    public function printException(\Exception $e){
+        if (!App::isIsDeveloperMode()) return;
+
+        echo $e->getMessage()."\n";
+        if($e instanceof \MeekroDBException) echo "Query: ".$e->getQuery()."\n";
+        echo $e->getTraceAsString();
     }
 }
