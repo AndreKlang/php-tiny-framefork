@@ -10,7 +10,8 @@
     "require": {
         "sergeytsalkov/meekrodb": "^2.3",
         "monolog/monolog": "^1.18",
-        "php-console/php-console": "^3.1"
+        "php-console/php-console": "^3.1",
+        "usmanhalalit/pixie": "dev-master#7df25f4"
     },
     "autoload": {
         "psr-0": {"KlangTiny": "src/"}

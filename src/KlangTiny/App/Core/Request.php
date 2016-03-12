@@ -193,11 +193,10 @@ class Request {
 
             $this->printException($e);
 
-        } catch (\MeekroDBException $e){
+        } catch (\PDOException $e){
 
             \App::logger()->addError("DB-Exception: ".$e->getMessage(),array(
                 "exception" => $e,
-                "query" => $e->getQuery(),
                 "trace" => $e->getTraceAsString(),
                 "request" => $this
             ));
@@ -220,7 +219,7 @@ class Request {
         if (!App::isIsDeveloperMode()) return;
 
         echo $e->getMessage()."\n";
-        if($e instanceof \MeekroDBException) echo "Query: ".$e->getQuery()."\n";
+        echo get_class($e)."\n";
         echo $e->getTraceAsString();
     }
 }

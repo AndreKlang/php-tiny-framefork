@@ -17,10 +17,10 @@ class Collection implements \Iterator {
     protected $_position;
     protected $_currentRow;
 
-    /** @var \MySQLi_Result */
+    /** @var array[] */
     protected $_result = null;
 
-    /** @var null|\WhereClause */
+    /** @var callable|null */
     protected $_filters = null;
 
     /** @var  App\Model\Db\Mysql */
@@ -29,9 +29,8 @@ class Collection implements \Iterator {
     /**
      * Constructor
      * @param App\Model\Db\Mysql $model
-     * @param \WhereClause $filters
      */
-    public function __construct($model, \WhereClause $filters = null) {
+    public function __construct($model, $filters = null) {
         $this->_model = $model;
         $this->_filters = $filters;
 
@@ -42,54 +41,42 @@ class Collection implements \Iterator {
      */
     public function load(){
 
+        // only load once
         if($this->_result !== null) return;
 
-        if($this->_filters) {
-            $filter = $this->_filters;
-        } else {
-            $filter = "1=1";
+        // get a query for this table, and set the fetchmode
+        $query = App::getMysql()
+            ->table($this->_model->getTableName())
+            ->setFetchMode(\PDO::FETCH_ASSOC);
+
+        // if there is a filter callback registered, call it
+        // that will modify the querr
+        if(is_callable($this->_filters)){
+            /** @var callable $callback */
+            $callback = $this->_filters;
+            $callback($query);
         }
 
-
-        $this->_result = App::getMysql()->queryRaw(
-            "SELECT * FROM %1 WHERE %2",
-            $this->_model->getTableName(),
-            $filter
-        );
-    }
-
-    /**
-     * Destructor
-     * Frees the Result object
-     */
-    public function __destruct() {
-        $this->_result->free();
+        // load the result into _result
+        // NOTE: this can be bad for memory, but is unsure how to do it otherwise
+        $this->_result = $query->get();
     }
 
     /**
      * Rewinds the internal pointer
+     * This always run first, that's why we trigger a load
      */
     public function rewind() {
 
         $this->load();
-
-        // data_seek moves the Results internal pointer
-        $this->_result->data_seek($this->_position = 0);
-
-        // prefetch the current row
-        // note that this advances the Results internal pointer.
-        $this->_currentRow = $this->_result->fetch_array(MYSQLI_ASSOC);
+        reset($this->_result);
     }
 
     /**
      * Moves the internal pointer one step forward
      */
     public function next() {
-        // prefetch the current row
-        $this->_currentRow = $this->_result->fetch_array(MYSQLI_ASSOC);
-
-        // and increment internal pointer
-        ++$this->_position;
+        next($this->_result);
     }
 
     /**
@@ -97,11 +84,12 @@ class Collection implements \Iterator {
      * @return bool
      */
     public function valid() {
-        return $this->_position < $this->_result->num_rows;
+        return key($this->_result) !== null;
     }
 
     /**
      * Returns the row that matches the current position
+     * Load it into a model before returning
      * @return array
      */
     public function current() {
@@ -116,7 +104,7 @@ class Collection implements \Iterator {
         $return = new $modelName();
 
         // load it with the current row-data & return
-        return $return->loadFromArray($this->_currentRow);
+        return $return->loadFromArray(current($this->_result));
     }
 
     /**
@@ -124,11 +112,16 @@ class Collection implements \Iterator {
      * @return int
      */
     public function key() {
-        return $this->_position;
+        return key($this->_result);
     }
 
+    /**
+     * Get row count
+     * @return int
+     */
     public function count(){
-        return $this->_result->num_rows;
+        $this->load();
+        return count($this->_result);
     }
 
 }
