@@ -50,7 +50,7 @@ class Collection implements \Iterator {
             ->setFetchMode(\PDO::FETCH_ASSOC);
 
         // if there is a filter callback registered, call it
-        // that will modify the querr
+        // that will modify the query
         if(is_callable($this->_filters)){
             /** @var callable $callback */
             $callback = $this->_filters;
