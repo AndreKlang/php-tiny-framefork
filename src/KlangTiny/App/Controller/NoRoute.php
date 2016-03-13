@@ -2,15 +2,16 @@
 
 namespace KlangTiny\App\Controller;
 
+use KlangTiny\App;
 use KlangTiny\App\Core\Request;
 use KlangTiny\App\Controller;
 
 class NoRoute extends Controller {
 
-    function preDispatch() {
+    public function preDispatch() {
         parent::preDispatch();
 
-        \App::getRequest()->setResponseCode(404);
+        App::getResponse()->setResponseCode(404);
     }
 
     // this controller will always match
@@ -18,7 +19,7 @@ class NoRoute extends Controller {
         return true;
     }
 
-    function render(){
+    public function render(){
         parent::render();
         echo "404";
     }

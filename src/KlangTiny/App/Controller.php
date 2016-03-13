@@ -14,14 +14,14 @@ abstract class Controller {
      * If you use the constructor, it will run for ALL controllers on every request
      * since they are initiated when registering controllers
      */
-    final function __construct(){
+    final public function __construct(){
 
     }
 
     /**
      * @see: $this->__construct()
      */
-    final function __destruct(){
+    final public function __destruct(){
 
     }
 
@@ -39,7 +39,7 @@ abstract class Controller {
     /**
      * Use this to set other headers and load stuff before rendering
      */
-    function preDispatch(){
+    public function preDispatch(){
 
     }
 
@@ -47,11 +47,14 @@ abstract class Controller {
     /**
      * Use this if you need to..
      */
-    function postDispatch(){
+    public function postDispatch(){
 
     }
 
-    function render(){
+    /**
+     * Start rendering the page
+     */
+    public function render(){
         App::getResponse()->sendHeaders();
     }
 }

@@ -16,7 +16,7 @@ class Request {
      * Get the uri, but without first /
      * @return string
      */
-    function getUri(){
+    public function getUri(){
         return substr($_SERVER['REQUEST_URI'], 1);
     }
 
@@ -29,7 +29,7 @@ class Request {
      *      self::METHOD_PUT
      * @return string
      */
-    function getMethod(){
+    public function getMethod(){
         return $_SERVER['REQUEST_METHOD'];
     }
 
@@ -59,7 +59,7 @@ class Request {
      * @param mixed $default
      * @return mixed
      */
-    function getParamPost($key = null, $default = null){
+    public function getParamPost($key = null, $default = null){
         return $this->_getParam($_POST, $key, $default);
     }
 
@@ -69,18 +69,18 @@ class Request {
      * @param mixed $default
      * @return mixed
      */
-    function getParamGet($key = null, $default = null){
+    public function getParamGet($key = null, $default = null){
         return $this->_getParam($_GET, $key, $default);
     }
 
     // TODO: deal with "put"
-    function getParamPut(){
+    public function getParamPut(){
     }
 
     /**
      * @return array|false
      */
-    function getHeaders(){
+    public function getHeaders(){
         return getallheaders();
     }
 
@@ -97,7 +97,7 @@ class Request {
      * @return Controller
      * @throws ControllerNotFound
      */
-    function getController(){
+    public function getController(){
 
         /**
          * @var string $uri
@@ -120,7 +120,7 @@ class Request {
      * Render matching controller
      * @throws ControllerNotFound
      */
-    function render(){
+    public function render(){
 
         try{
 
@@ -131,31 +131,31 @@ class Request {
 
         } catch (ControllerNotFound $e) {
 
-            \App::logger()->addError("No controller matching the request: ".$e->getMessage(), array(
+            App::logger()->addError("No controller matching the request: ".$e->getMessage(), array(
                 "exception" => $e,
                 "request" => $this
             ));
 
-            \App::getResponse()->printException($e);
+            App::getResponse()->printException($e);
 
         } catch (\PDOException $e) {
 
-            \App::logger()->addError("DB-Exception: ".$e->getMessage(), array(
+            App::logger()->addError("DB-Exception: ".$e->getMessage(), array(
                 "exception" => $e,
                 "trace" => $e->getTraceAsString(),
                 "request" => $this
             ));
 
-            \App::getResponse()->printException($e);
+            App::getResponse()->printException($e);
 
         } catch (\Exception $e) {
-            \App::logger()->addError("Uncaught exception: ".$e->getMessage(), array(
+            App::logger()->addError("Uncaught exception: ".$e->getMessage(), array(
                 "exception" => $e,
                 "trace" => $e->getTraceAsString(),
                 "request" => $this
             ));
 
-            \App::getResponse()->printException($e);
+            App::getResponse()->printException($e);
         }
 
     }

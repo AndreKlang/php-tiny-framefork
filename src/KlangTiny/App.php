@@ -36,7 +36,7 @@ class App {
 
     private static $_isDeveloperMode = false;
 
-    function __construct() {
+    public function __construct() {
 
         // add document root to path
         self::$_logFolder = $_SERVER['DOCUMENT_ROOT'].self::$_logFolder;

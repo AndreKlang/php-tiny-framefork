@@ -13,7 +13,7 @@ class StatusCode {
      * @throws UnknownStatusCode
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    function getText($code){
+    public function getText($code){
 
         switch ($code) {
             case 100:

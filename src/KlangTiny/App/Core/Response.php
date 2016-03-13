@@ -21,7 +21,7 @@ class Response {
      * Get the uri, but without first /
      * @return string
      */
-    function getUri(){
+    public function getUri(){
         return substr($_SERVER['REQUEST_URI'], 1);
     }
 
@@ -75,7 +75,7 @@ class Response {
      * @return string[]
      * @throws Response\Exception\UnknownStatusCode
      */
-    function getHeaders(){
+    public function getHeaders(){
         $headers = array();
 
         // content type & charset
@@ -101,7 +101,7 @@ class Response {
      * Send all headers to browser
      * @return $this
      */
-    function sendHeaders(){
+    public function sendHeaders(){
         foreach($this->getHeaders() as $header) {
             header($header);
         }
