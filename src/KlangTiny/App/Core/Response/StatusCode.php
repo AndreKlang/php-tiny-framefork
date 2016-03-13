@@ -1,8 +1,8 @@
 <?php
 
-namespace KlangTiny\App\Core\Request;
+namespace KlangTiny\App\Core\Response;
 
-use KlangTiny\App\Core\Request\Exception\UnknownStatusCode;
+use KlangTiny\App\Core\Response\Exception\UnknownStatusCode;
 
 class StatusCode {
     function getText($code){

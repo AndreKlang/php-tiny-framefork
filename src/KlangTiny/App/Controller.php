@@ -51,7 +51,7 @@ abstract class Controller {
     }
 
     function render(){
-        App::getRequest()->sendHeaders();
+        App::getResponse()->sendHeaders();
     }
 
 }

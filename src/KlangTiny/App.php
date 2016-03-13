@@ -27,25 +27,14 @@ class App {
     /** @var \KlangTiny\App\Core\Request */
     private static $_request;
 
+    /** @var \KlangTiny\App\Core\Response */
+    private static $_response;
+
     private static $_configFilePath = "./config.json";
 
     private static $_logFolder = '/var/log';
 
     private static $_isDeveloperMode = false;
-
-    /**
-     * @return boolean
-     */
-    public static function isIsDeveloperMode() {
-        return self::$_isDeveloperMode;
-    }
-
-    /**
-     * @param boolean $isDeveloperMode
-     */
-    public static function setIsDeveloperMode($isDeveloperMode) {
-        self::$_isDeveloperMode = $isDeveloperMode;
-    }
 
     function __construct() {
 
@@ -61,6 +50,9 @@ class App {
 
         // initiate the request
         self::$_request = new \KlangTiny\App\Core\Request();
+
+        // initiate the response
+        self::$_response = new \KlangTiny\App\Core\Response();
     }
 
     /**
@@ -68,6 +60,13 @@ class App {
      */
     public static function getRequest() {
         return self::$_request;
+    }
+
+    /**
+     * @return \KlangTiny\App\Core\Response
+     */
+    public static function getResponse() {
+        return self::$_response;
     }
 
     /**
@@ -163,6 +162,20 @@ class App {
      */
     public static function setConfigFilePath($configFilePath) {
         self::$_configFilePath = $configFilePath;
+    }
+
+    /**
+     * @return boolean
+     */
+    public static function isIsDeveloperMode() {
+        return self::$_isDeveloperMode;
+    }
+
+    /**
+     * @param boolean $isDeveloperMode
+     */
+    public static function setIsDeveloperMode($isDeveloperMode) {
+        self::$_isDeveloperMode = $isDeveloperMode;
     }
 
     /**
