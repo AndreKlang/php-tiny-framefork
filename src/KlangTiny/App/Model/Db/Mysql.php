@@ -148,11 +148,11 @@ abstract class Mysql extends Model {
      */
     public function getData($key = null, $default = null){
 
-        if($key !== null){
+        if($key !== null) {
             return $this->_getData($key, $default);
         }
 
-        return array_filter($this->_data, function($arKey) use ($default) {
+        return array_filter($this->_data, function ($arKey) use ($default) {
             return $this->_getData($arKey, $default);
         }, ARRAY_FILTER_USE_KEY);
     }

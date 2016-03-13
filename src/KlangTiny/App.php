@@ -88,7 +88,7 @@ class App {
 
         // load config once
         if(self::$_config === null) {
-            if($filename){
+            if($filename) {
                 self::$_config = json_decode(file_get_contents($filename));
             } else {
                 self::$_config = new \stdClass();
