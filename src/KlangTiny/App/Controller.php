@@ -30,6 +30,7 @@ abstract class Controller {
      * Return true if this request matches, false otherwise.
      * @param Request $request
      * @return bool
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function match(Request $request){
         return false;
@@ -53,5 +54,4 @@ abstract class Controller {
     function render(){
         App::getResponse()->sendHeaders();
     }
-
 }

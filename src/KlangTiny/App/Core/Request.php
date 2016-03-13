@@ -17,7 +17,7 @@ class Request {
      * @return string
      */
     function getUri(){
-        return substr($_SERVER['REQUEST_URI'],1);
+        return substr($_SERVER['REQUEST_URI'], 1);
     }
 
     /**
@@ -40,11 +40,15 @@ class Request {
      * @param mixed $default
      * @return mixed
      */
-    private function _getParam(array $context ,$key = null, $default = null){
+    private function _getParam(array $context, $key = null, $default = null){
 
-        if($key === null) return $context;
+        if($key === null) {
+            return $context;
+        }
 
-        if(!isset($context[$key])) return $default;
+        if(!isset($context[$key])) {
+            return $default;
+        }
 
         return $context[$key];
     }
@@ -56,7 +60,7 @@ class Request {
      * @return mixed
      */
     function getParamPost($key = null, $default = null){
-        return $this->_getParam($_POST,$key,$default);
+        return $this->_getParam($_POST, $key, $default);
     }
 
     /**
@@ -66,7 +70,7 @@ class Request {
      * @return mixed
      */
     function getParamGet($key = null, $default = null){
-        return $this->_getParam($_GET,$key,$default);
+        return $this->_getParam($_GET, $key, $default);
     }
 
     // TODO: deal with "put"
@@ -99,13 +103,15 @@ class Request {
          * @var string $uri
          * @var Controller $registeredController
          */
-        foreach (\App::getRegisteredControllers() as $registeredController) {
-            if($registeredController->match($this)){
+        foreach (App::getRegisteredControllers() as $registeredController) {
+            if($registeredController->match($this)) {
                 return $registeredController;
             }
         }
 
-        if(App::$controllerNoRoute !== null) return App::$controllerNoRoute;
+        if(App::$controllerNoRoute !== null) {
+            return App::$controllerNoRoute;
+        }
 
         throw new ControllerNotFound("Controller not found for uri");
     }
@@ -125,16 +131,16 @@ class Request {
 
         } catch (ControllerNotFound $e) {
 
-            \App::logger()->addError("No controller matching the request: ".$e->getMessage(),array(
+            \App::logger()->addError("No controller matching the request: ".$e->getMessage(), array(
                 "exception" => $e,
                 "request" => $this
             ));
 
             \App::getResponse()->printException($e);
 
-        } catch (\PDOException $e){
+        } catch (\PDOException $e) {
 
-            \App::logger()->addError("DB-Exception: ".$e->getMessage(),array(
+            \App::logger()->addError("DB-Exception: ".$e->getMessage(), array(
                 "exception" => $e,
                 "trace" => $e->getTraceAsString(),
                 "request" => $this
@@ -142,8 +148,8 @@ class Request {
 
             \App::getResponse()->printException($e);
 
-        } catch (\Exception $e){
-            \App::logger()->addError("Uncaught exception: ".$e->getMessage(),array(
+        } catch (\Exception $e) {
+            \App::logger()->addError("Uncaught exception: ".$e->getMessage(), array(
                 "exception" => $e,
                 "trace" => $e->getTraceAsString(),
                 "request" => $this

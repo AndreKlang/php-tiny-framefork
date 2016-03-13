@@ -41,7 +41,9 @@ class App {
         // add document root to path
         self::$_logFolder = $_SERVER['DOCUMENT_ROOT'].self::$_logFolder;
 
-        if(!file_exists(self::$_logFolder)) mkdir(self::$_logFolder, 0755, true);
+        if(!file_exists(self::$_logFolder)) {
+            mkdir(self::$_logFolder, 0755, true);
+        }
 
         // set up monolog
         self::$_log = new Logger("System");
@@ -85,13 +87,19 @@ class App {
         $filename = realpath(self::$_configFilePath);
 
         // load config once
-        if(self::$_config === null) self::$_config = json_decode(file_get_contents($filename));
+        if(self::$_config === null) {
+            self::$_config = json_decode(file_get_contents($filename));
+        }
 
         // return all if no key
-        if($key === null) return self::$_config;
+        if($key === null) {
+            return self::$_config;
+        }
 
         // if specified does not exist key exists, return $default
-        if(!isset(self::$_config->$key)) return $default;
+        if(!isset(self::$_config->$key)) {
+            return $default;
+        }
 
         // if, after all, a key was found, return it
         return self::$_config->$key;
@@ -104,16 +112,28 @@ class App {
      */
     public static function getMysql(){
 
-        if(self::$_mysql != null) return self::$_mysql;
+        if(self::$_mysql != null) {
+            return self::$_mysql;
+        }
 
         $mysqlConfig = self::getConfig("db")->mysql;
 
         // support for docker or runtime configuration
-        if(isset($_ENV["MYSQL_HOST"])) $mysqlConfig->host = $_ENV["MYSQL_HOST"];
-        if(isset($_ENV["MYSQL_USER"])) $mysqlConfig->user = $_ENV["MYSQL_USER"];
-        if(isset($_ENV["MYSQL_PASSWORD"])) $mysqlConfig->password = $_ENV["MYSQL_PASSWORD"];
-        if(isset($_ENV["MYSQL_DATABASE"])) $mysqlConfig->dbName = $_ENV["MYSQL_DATABASE"];
-        if(isset($_ENV["MYSQL_PORT"])) $mysqlConfig->port = $_ENV["MYSQL_PORT"];
+        if(isset($_ENV["MYSQL_HOST"])) {
+            $mysqlConfig->host = $_ENV["MYSQL_HOST"];
+        }
+        if(isset($_ENV["MYSQL_USER"])) {
+            $mysqlConfig->user = $_ENV["MYSQL_USER"];
+        }
+        if(isset($_ENV["MYSQL_PASSWORD"])) {
+            $mysqlConfig->password = $_ENV["MYSQL_PASSWORD"];
+        }
+        if(isset($_ENV["MYSQL_DATABASE"])) {
+            $mysqlConfig->dbName = $_ENV["MYSQL_DATABASE"];
+        }
+        if(isset($_ENV["MYSQL_PORT"])) {
+            $mysqlConfig->port = $_ENV["MYSQL_PORT"];
+        }
 
         $config = array(
             'driver'    => 'mysql',
@@ -184,5 +204,4 @@ class App {
     public static function run(){
         self::$_request->render();
     }
-
 }

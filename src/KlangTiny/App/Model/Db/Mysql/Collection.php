@@ -42,7 +42,9 @@ class Collection implements \Iterator {
     public function load(){
 
         // only load once
-        if($this->_result !== null) return;
+        if($this->_result !== null) {
+            return;
+        }
 
         // get a query for this table, and set the fetchmode
         $query = App::getMysql()
@@ -51,7 +53,7 @@ class Collection implements \Iterator {
 
         // if there is a filter callback registered, call it
         // that will modify the query
-        if(is_callable($this->_filters)){
+        if(is_callable($this->_filters)) {
             /** @var callable $callback */
             $callback = $this->_filters;
             $callback($query);
@@ -123,5 +125,4 @@ class Collection implements \Iterator {
         $this->load();
         return count($this->_result);
     }
-
 }

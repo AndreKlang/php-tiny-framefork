@@ -1,6 +1,7 @@
 <?php
 
 namespace KlangTiny\App\Model\Db;
+
 use KlangTiny\App;
 use KlangTiny\App\Model;
 
@@ -31,16 +32,18 @@ abstract class Mysql extends Model {
     /** @var string[]  */
     protected $_changedColumns = array();
 
-    public function load($id){
+    public function load($identifier){
 
         // get data from DB
         $data = App::getMysql()
             ->table($this->getTableName())
             ->setFetchMode(\PDO::FETCH_ASSOC)
-            ->find($id,$this->getIdCol());
+            ->find($identifier, $this->getIdCol());
 
         // make sure that we know this is loaded
-        if(!empty($data)) $this->_isRecordNew = false;
+        if(!empty($data)) {
+            $this->_isRecordNew = false;
+        }
 
         // save data in object instance
         $this->_data = $data;
@@ -53,8 +56,8 @@ abstract class Mysql extends Model {
      * @param $data
      */
     public function loadFromArray(array $data, $isRecordNew = false){
-        foreach($data as $key => $value){
-            $this->_data[$key] = $this->_cast($key,$value);
+        foreach($data as $key => $value) {
+            $this->_data[$key] = $this->_cast($key, $value);
         }
 
         $this->_isRecordNew = ($isRecordNew);
@@ -68,19 +71,21 @@ abstract class Mysql extends Model {
     public function save(){
 
         // if there is nothing to save, don't save
-        if(!$this->isChanged()) return $this;
+        if(!$this->isChanged()) {
+            return $this;
+        }
 
         // For new records, insert
         // For existing records, update
-        if($this->_isRecordNew){
+        if($this->_isRecordNew) {
 
             // save the data
-            $id = App::getMysql()
+            $newId = App::getMysql()
                 ->table($this->getTableName())
                 ->insert($this->_data);
 
             // set the id it got in this instance
-            $this->_data[$this->getIdCol()] = $id;
+            $this->_data[$this->getIdCol()] = $newId;
 
             // store that it is not new anymore
             $this->_isRecordNew = false;
@@ -89,13 +94,13 @@ abstract class Mysql extends Model {
             // only save the changed columns
             // makes sure that we don't clear columns that was not loaded
             $data = array();
-            foreach($this->_changedColumns as $key){
+            foreach($this->_changedColumns as $key) {
                 $data[$key] = $this->_getData($key);
             }
 
             App::getMysql()
                 ->table($this->getTableName())
-                ->where($this->getIdCol(),"=",$this->getId())
+                ->where($this->getIdCol(), "=", $this->getId())
                 ->update($data);
         }
 
@@ -108,11 +113,13 @@ abstract class Mysql extends Model {
      * @throws \Exception
      */
     public function delete(){
-        if($this->_isRecordNew) throw new \Exception("Can't delete unsaved record");
+        if($this->_isRecordNew) {
+            throw new \Exception("Can't delete unsaved record");
+        }
 
         App::getMysql()
             ->table($this->getTableName())
-            ->where($this->getIdCol(),"=",$this->getId())
+            ->where($this->getIdCol(), "=", $this->getId())
             ->delete();
 
         return $this;
@@ -137,11 +144,12 @@ abstract class Mysql extends Model {
      * @param $key
      * @return null|string
      */
-    protected function _getData($key,$default = null){
-        if(isset($this->_data[$key]))
+    protected function _getData($key, $default = null){
+        if(isset($this->_data[$key])) {
             return $this->_cast($key, $this->_data[$key]);
-        else
+        } else {
             return $default;
+        }
     }
 
     /**
@@ -150,10 +158,12 @@ abstract class Mysql extends Model {
      * @param mixed $value
      * @throws \Exception
      */
-    protected function _setData($key,$value){
-        if(!$this->_isKeyAllowedInSchema($key)) throw new \Exception("Key not allowed in schema");
+    protected function _setData($key, $value){
+        if(!$this->_isKeyAllowedInSchema($key)) {
+            throw new \Exception("Key not allowed in schema");
+        }
 
-        $this->_registerChange($key,$value);
+        $this->_registerChange($key, $value);
 
         $this->_data[$key] = $value;
 
@@ -166,8 +176,8 @@ abstract class Mysql extends Model {
      * @param $key
      * @param $value
      */
-    protected function _registerChange($key,$value){
-        if($value != $this->_getData($key) && !in_array($key,$this->_changedColumns)){
+    protected function _registerChange($key, $value){
+        if($value != $this->_getData($key) && !in_array($key, $this->_changedColumns)) {
             $this->_changedColumns[] = $key;
         }
     }
@@ -185,11 +195,13 @@ abstract class Mysql extends Model {
      * @param $key
      * @param $value
      */
-    private function _cast($key,$value){
+    private function _cast($key, $value){
 
-        if(!$this->_isKeyAllowedInSchema($key)) throw new \Exception("Key not allowed in schema");
+        if(!$this->_isKeyAllowedInSchema($key)) {
+            throw new \Exception("Key not allowed in schema");
+        }
 
-        switch($this->_getDataTypeForKey($key)){
+        switch($this->_getDataTypeForKey($key)) {
             case self::TYPE_BOOLEAN:
                 return (bool) $value;
             case self::TYPE_FLOAT:
@@ -211,7 +223,9 @@ abstract class Mysql extends Model {
      */
     private function _getDataTypeForKey($key){
 
-        if(!$this->_isKeyAllowedInSchema($key)) throw new \Exception("Key not allowed in schema");
+        if(!$this->_isKeyAllowedInSchema($key)) {
+            throw new \Exception("Key not allowed in schema");
+        }
 
         return $this->_schema[$key];
     }
@@ -222,8 +236,9 @@ abstract class Mysql extends Model {
      * @return bool
      */
     private function _isKeyAllowedInSchema($key){
-        if(array_key_exists($key,$this->_schema))
+        if(array_key_exists($key, $this->_schema)) {
             return true;
+        }
 
         return false;
     }
@@ -259,5 +274,4 @@ abstract class Mysql extends Model {
     public function getTableName() {
         return $this->_table_name;
     }
-
 }

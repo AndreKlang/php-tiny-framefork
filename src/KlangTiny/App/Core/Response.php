@@ -22,7 +22,7 @@ class Response {
      * @return string
      */
     function getUri(){
-        return substr($_SERVER['REQUEST_URI'],1);
+        return substr($_SERVER['REQUEST_URI'], 1);
     }
 
     /**
@@ -79,7 +79,7 @@ class Response {
         $headers = array();
 
         // content type & charset
-        $headers[] = sprintf("Content-type: %s; charset= %s",$this->_contentType,$this->_charSet);
+        $headers[] = sprintf("Content-type: %s; charset= %s", $this->_contentType, $this->_charSet);
 
         // response code
         $headers[] = sprintf(
@@ -90,7 +90,7 @@ class Response {
         );
 
         // extra headers
-        foreach($this->_extraHeaders as $key => $value){
+        foreach($this->_extraHeaders as $key => $value) {
             $headers[] = sprintf("%s: %s", $key, $value);
         }
 
@@ -102,17 +102,19 @@ class Response {
      * @return $this
      */
     function sendHeaders(){
-        foreach($this->getHeaders() as $header){
+        foreach($this->getHeaders() as $header) {
             header($header);
         }
         return $this;
     }
 
-    public function printException(\Exception $e){
-        if (!App::isIsDeveloperMode()) return;
+    public function printException(\Exception $exception){
+        if (!App::isIsDeveloperMode()) {
+            return;
+        }
 
-        echo $e->getMessage()."\n";
-        echo get_class($e)."\n";
-        echo $e->getTraceAsString();
+        echo $exception->getMessage()."\n";
+        echo get_class($exception)."\n";
+        echo $exception->getTraceAsString();
     }
 }
