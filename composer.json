@@ -12,6 +12,12 @@
         "php-console/php-console": "^3.1",
         "usmanhalalit/pixie": "dev-master#7df25f4"
     },
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "phpmd/phpmd" : "*",
+        "squizlabs/php_codesniffer": "*",
+        "sebastian/phpcpd": "*"
+    },
     "autoload": {
         "psr-0": {"KlangTiny": "src/"}
     }
