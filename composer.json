@@ -3,8 +3,7 @@
     "type": "library",
     "authors": [
         {
-            "name": "AndreKlang",
-            "email": "hej@andreklang.se"
+            "name": "AndreKlang"
         }
     ],
     "require": {
