@@ -141,6 +141,23 @@ abstract class Mysql extends Model {
     }
 
     /**
+     * Get data by key, or all
+     * @param null $key
+     * @param null $default
+     * @return array|null|string
+     */
+    public function getData($key = null, $default = null){
+
+        if($key !== null){
+            return $this->_getData($key, $default);
+        }
+
+        return array_filter($this->_data, function($arKey) use ($default) {
+            return $this->_getData($arKey, $default);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    /**
      * @param $key
      * @return null|string
      */

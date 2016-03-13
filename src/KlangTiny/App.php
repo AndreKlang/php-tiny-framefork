@@ -88,7 +88,11 @@ class App {
 
         // load config once
         if(self::$_config === null) {
-            self::$_config = json_decode(file_get_contents($filename));
+            if($filename){
+                self::$_config = json_decode(file_get_contents($filename));
+            } else {
+                self::$_config = new \stdClass();
+            }
         }
 
         // return all if no key
